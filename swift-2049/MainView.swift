@@ -10,9 +10,10 @@ import UIKit
 
 struct SwiftUINumberTileController: UIViewControllerRepresentable {
     @Binding var score: Int?
+    @Binding var reset: Bool?
     
     func makeUIViewController(context: Context) -> NumberTileGameViewController {
-        let game = NumberTileGameViewController(dimension: 4, threshold: 2048)
+        let game = NumberTileGameViewController(dimension: 4, threshold: 16)
         let originalDelegate = game.model?.delegate
         context.coordinator.originalDelegate = originalDelegate!
         game.model?.delegate = context.coordinator
@@ -20,7 +21,12 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: NumberTileGameViewController, context: Context) {
-//        score = uiViewController.model?.score
+        if self.reset == true {
+            uiViewController.model?.delegate.reset()
+            DispatchQueue.main.async {
+                self.reset = false
+            }
+        }
     }
     
     func makeCoordinator() -> Coordinator {
@@ -29,6 +35,10 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
 
     
     class Coordinator: NSObject, GameModelProtocol {
+        func reset() {
+            originalDelegate?.reset()
+        }
+        
         func moveOneTile(from: (Int, Int), to: (Int, Int), value: Int) {
             originalDelegate?.moveOneTile(from: from, to: to, value: value)
         }
@@ -54,15 +64,20 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
                 self.parent.score = newScore
             }
         }
+        
+        // add func here for hooking into gameOver
     }
 }
 
 struct MainView: View {
     @State private var score: Int? = 0
+    @State private var reset: Bool? = false
+    
     var body: some View {
         VStack {
             Text("Score: \(score ?? 1)")
-            SwiftUINumberTileController(score: $score)
+            SwiftUINumberTileController(score: $score, reset: $reset)
+            Button("Restart") {reset = true}
         }
     }
 }
