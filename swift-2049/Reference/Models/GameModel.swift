@@ -15,6 +15,7 @@ protocol GameModelProtocol : AnyObject {
     func moveTwoTiles(from: ((Int, Int), (Int, Int)), to: (Int, Int), value: Int)
     func insertTile(at location: (Int, Int), withValue value: Int)
     func reset()
+    func gameOver(won: Bool)
 }
 
 /// A class representing the game state and game logic for swift-2048. It is owned by a NumberTileGame view controller.
@@ -181,6 +182,7 @@ class GameModel : NSObject {
                 }
             }
         }
+        delegate.gameOver(won: false)
         return true
     }
     
@@ -189,6 +191,7 @@ class GameModel : NSObject {
             for j in 0..<dimension {
                 // Look for a tile with the winning score or greater
                 if case let .tile(v) = gameboard[i, j], v >= threshold {
+                    delegate.gameOver(won: true)
                     return (true, (i, j))
                 }
             }

@@ -163,9 +163,7 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
         let m = model!
         let (userWon, _) = m.userHasWon()
         if userWon {
-            // TODO: alert delegate we won
-            // TODO: At this point we should stall the game until the user taps 'New Game' (which hasn't been implemented yet)
-//            reset()
+            // alerting delegate is done in m.userHasWon
             return
         }
         
@@ -175,7 +173,7 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
         
         // At this point, the user may lose
         if m.userHasLost() {
-            // TODO: alert delegate we lost
+            // alerting delegate is done in m.userHasLost
             return
         }
     }
@@ -230,6 +228,10 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
     }
     
     // Protocol
+    func gameOver(won: Bool) {
+        print(won)
+    }
+    
     func scoreChanged(to score: Int) {
         if scoreView == nil {
             return

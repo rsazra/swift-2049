@@ -10,10 +10,12 @@ import UIKit
 
 struct SwiftUINumberTileController: UIViewControllerRepresentable {
     @Binding var score: Int?
-    @Binding var reset: Bool?
+    @Binding var reset: Bool
+    // gameResult: nil if ongoing, False if lost, True if won
+    @Binding var result: Bool?
     
     func makeUIViewController(context: Context) -> NumberTileGameViewController {
-        let game = NumberTileGameViewController(dimension: 4, threshold: 16)
+        let game = NumberTileGameViewController(dimension: 4, threshold: 8)
         let originalDelegate = game.model?.delegate
         context.coordinator.originalDelegate = originalDelegate!
         game.model?.delegate = context.coordinator
@@ -65,18 +67,29 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
             }
         }
         
-        // add func here for hooking into gameOver
+        func gameOver(won: Bool) {
+            originalDelegate?.gameOver(won: won)
+            DispatchQueue.main.async {
+                self.parent.result = won
+            }
+        }
     }
 }
 
 struct MainView: View {
     @State private var score: Int? = 0
-    @State private var reset: Bool? = false
+    @State private var reset: Bool = false
+    @State private var result: Bool? = nil
+    
+    func gameWon() {
+        print("game won")
+    }
     
     var body: some View {
         VStack {
             Text("Score: \(score ?? 1)")
-            SwiftUINumberTileController(score: $score, reset: $reset)
+            Text("Result: \(result ?? false)")
+            SwiftUINumberTileController(score: $score, reset: $reset, result: $result)
             Button("Restart") {reset = true}
         }
     }
