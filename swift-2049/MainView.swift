@@ -10,8 +10,9 @@ import UIKit
 
 struct SwiftUINumberTileController: UIViewControllerRepresentable {
     @Binding var score: Int?
+    // reset: false by default, true if reset requested
     @Binding var reset: Bool
-    // gameResult: nil if ongoing, False if lost, True if won
+    // result: nil if ongoing, False if lost, True if won
     @Binding var result: Bool?
     
     func makeUIViewController(context: Context) -> NumberTileGameViewController {
@@ -34,39 +35,37 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-
     
     class Coordinator: NSObject, GameModelProtocol {
-        func reset() {
-            originalDelegate?.reset()
-        }
-        
-        func moveOneTile(from: (Int, Int), to: (Int, Int), value: Int) {
-            originalDelegate?.moveOneTile(from: from, to: to, value: value)
-        }
-        
-        func moveTwoTiles(from: ((Int, Int), (Int, Int)), to: (Int, Int), value: Int) {
-            originalDelegate?.moveTwoTiles(from: from, to: to, value: value)
-        }
-        
-        func insertTile(at location: (Int, Int), withValue value: Int) {
-            originalDelegate?.insertTile(at: location, withValue: value)
+        // setup
+        init(_ parent: SwiftUINumberTileController) {
+            self.parent = parent
         }
         
         var parent: SwiftUINumberTileController
         var originalDelegate: GameModelProtocol?
         
-        init(_ parent: SwiftUINumberTileController) {
-            self.parent = parent
+        // unchanged protocol functions
+        func reset() {
+            originalDelegate?.reset()
+        }
+        func moveOneTile(from: (Int, Int), to: (Int, Int), value: Int) {
+            originalDelegate?.moveOneTile(from: from, to: to, value: value)
+        }
+        func moveTwoTiles(from: ((Int, Int), (Int, Int)), to: (Int, Int), value: Int) {
+            originalDelegate?.moveTwoTiles(from: from, to: to, value: value)
+        }
+        func insertTile(at location: (Int, Int), withValue value: Int) {
+            originalDelegate?.insertTile(at: location, withValue: value)
         }
         
+        // protocol functions with new side effects
         func scoreChanged(to newScore: Int) {
             originalDelegate?.scoreChanged(to: newScore)
             DispatchQueue.main.async {
                 self.parent.score = newScore
             }
         }
-        
         func gameOver(won: Bool) {
             originalDelegate?.gameOver(won: won)
             DispatchQueue.main.async {
@@ -80,10 +79,6 @@ struct MainView: View {
     @State private var score: Int? = 0
     @State private var reset: Bool = false
     @State private var result: Bool? = nil
-    
-    func gameWon() {
-        print("game won")
-    }
     
     var body: some View {
         VStack {

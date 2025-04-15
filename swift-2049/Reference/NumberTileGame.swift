@@ -24,7 +24,9 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
     var scoreView: ScoreViewProtocol?
     
     // Width of the gameboard
-    let boardWidth: CGFloat = 230.0
+    let boardWidth: CGFloat = 300.0
+    // Font size in tiles
+    let fontSize: CGFloat = 32.0
     // How much padding to place between the tiles
     let thinPadding: CGFloat = 3.0
     let thickPadding: CGFloat = 6.0
@@ -128,6 +130,7 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
                                       tileWidth: width,
                                       tilePadding: padding,
                                       cornerRadius: 6,
+                                      fontSize: fontSize,
                                       backgroundColor: UIColor.black,
                                       foregroundColor: UIColor.darkGray)
         
@@ -229,7 +232,7 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
     
     // Protocol
     func gameOver(won: Bool) {
-        print(won)
+        return
     }
     
     func scoreChanged(to score: Int) {
