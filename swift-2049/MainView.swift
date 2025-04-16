@@ -76,6 +76,7 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
 }
 
 struct MainView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var score: Int? = 0
     @State private var reset: Bool = false
     @State private var result: Bool? = nil
@@ -92,4 +93,5 @@ struct MainView: View {
 
 #Preview {
     MainView()
+        .modelContainer(for: Stats.self, inMemory: true)
 }
