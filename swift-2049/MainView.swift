@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 struct SwiftUINumberTileController: UIViewControllerRepresentable {
-    @Binding var score: Int?
+    @Binding var score: Int
     // reset: false by default, true if reset requested
     @Binding var reset: Bool
     // result: nil if ongoing, False if lost, True if won
@@ -77,16 +77,22 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
 
 struct MainView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var score: Int? = 0
+    @State private var score: Int = 0
     @State private var reset: Bool = false
     @State private var result: Bool? = nil
+    @State private var highScore: Int = 0
     
     var body: some View {
         VStack {
-            Text("Score: \(score ?? 1)")
+            Text("Score: \(score)")
             Text("Result: \(result ?? false)")
+            Text("High score: \(max(highScore, score))")
             SwiftUINumberTileController(score: $score, reset: $reset, result: $result)
-            Button("Restart") {reset = true}
+            Button("Restart") {
+                Stats.updateStats(with: score, context: modelContext)
+                highScore = Stats.getHighScore(context: modelContext)
+                reset = true
+            }
         }
     }
 }

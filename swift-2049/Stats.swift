@@ -23,10 +23,12 @@ class Stats {
     }
     
     static func updateStats(with newScore: Int, context: ModelContext) {
+        if newScore == 0 { return }
         let fetchDescriptor = FetchDescriptor<Stats>()
         guard let stats = (try? context.fetch(fetchDescriptor).first) else {
             let stats = Stats(firstScore: newScore)
             context.insert(stats)
+            print("new!", stats.highScore, stats.gamesPlayed, stats.lowScore, stats.averageScore)
             return
         }
         
@@ -47,5 +49,13 @@ class Stats {
         } catch {
             print("Failed to save context: \(error)")
         }
+        
+        print("prev!", stats.highScore, stats.gamesPlayed, stats.lowScore, stats.averageScore)
+    }
+    
+    static func getHighScore(context: ModelContext) -> Int {
+        let highScore = try? context.fetch(FetchDescriptor<Stats>()).first?.highScore
+        return highScore ?? 0
+        // in theory this could be a one liner with `try!` but I don't understand how that works?
     }
 }
