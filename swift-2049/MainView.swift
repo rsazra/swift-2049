@@ -47,6 +47,9 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
         
         // unchanged protocol functions
         func reset() {
+            DispatchQueue.main.async {
+                self.parent.result = nil
+            }
             originalDelegate?.reset()
         }
         func moveOneTile(from: (Int, Int), to: (Int, Int), value: Int) {
@@ -78,6 +81,7 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
 struct MainView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var score: Int = 0
+    @State private var showReset: Bool = false
     @State private var reset: Bool = false
     @State private var result: Bool? = nil
     @State private var highScore: Int = 0
@@ -85,13 +89,23 @@ struct MainView: View {
     var body: some View {
         VStack {
             Text("Score: \(score)")
-            Text("Result: \(result ?? false)")
+            Text("Result: \(String(describing: result))")
             Text("High score: \(max(highScore, score))")
             SwiftUINumberTileController(score: $score, reset: $reset, result: $result)
             Button("Restart") {
-                Stats.updateStats(with: score, context: modelContext)
-                highScore = Stats.getHighScore(context: modelContext)
-                reset = true
+                showReset = true
+            }
+            .alert(isPresented: $showReset) {
+                Alert(
+                    title: Text("Reset"),
+                    message: Text("Are you sure?"),
+                    primaryButton: .cancel(),
+                    secondaryButton: .destructive(Text("Reset"),
+                    action: {
+                        Stats.updateStats(with: score, context: modelContext)
+                        highScore = Stats.getHighScore(context: modelContext)
+                        reset = true
+                    }))
             }
         }
     }

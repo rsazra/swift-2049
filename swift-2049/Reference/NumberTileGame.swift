@@ -164,11 +164,11 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
     func followUp() {
         assert(model != nil)
         let m = model!
-        let (userWon, _) = m.userHasWon()
-        if userWon {
-            // alerting delegate is done in m.userHasWon
-            return
-        }
+//        let (userWon, _) = m.userHasWon()
+//        if userWon {
+//            // alerting delegate is done in m.userHasWon
+//            return
+//        }
         
         // Now, insert more tiles
         let randomVal = Int(arc4random_uniform(10))
