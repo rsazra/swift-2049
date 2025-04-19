@@ -85,6 +85,8 @@ struct MainView: View {
     @State private var reset: Bool = false
     @State private var result: Bool? = nil
     @State private var highScore: Int = 0
+    @State private var secondStat: SecondStat? = .highScore
+//    @State private var secondStat: SecondStat? = nil
     let boardSize: CGFloat = 325
     
     var body: some View {
@@ -93,6 +95,7 @@ struct MainView: View {
             Text("Result: \(String(describing: result))")
             Text("High score: \(max(highScore, score))")
             Spacer()
+            ScoreBoard(score: score, secondary: secondStat)
             SwiftUINumberTileController(score: $score, reset: $reset, result: $result)
                 .frame(width: boardSize, height: boardSize)
             Spacer()
@@ -107,12 +110,70 @@ struct MainView: View {
                     secondaryButton: .destructive(Text("Reset"),
                     action: {
                         Stats.updateStats(with: score, context: modelContext)
-                        highScore = Stats.getHighScore(context: modelContext)
+                        highScore = Stats.getHighScore(context: modelContext) ?? 0
                         reset = true
                     }))
             }
         }
     }
+}
+
+struct ScoreBoard: View {
+    @Environment(\.modelContext) private var modelContext
+    var score: Int
+    var secondary: SecondStat?
+    var secondaryLabel: String? {
+        guard let secondary = secondary else { return nil }
+        switch secondary {
+        case .highScore:
+            return "High Score"
+        case .lowScore:
+            return "Worst Score"
+        case .average:
+            return "Average"
+        }
+    }
+    var secondaryValue: Int? {
+        guard let secondary = secondary else { return nil }
+        switch secondary {
+        case .highScore:
+            return max(score, Stats.getHighScore(context: modelContext) ?? 0)
+        case .lowScore:
+            return Stats.getLowScore(context: modelContext)
+        case .average:
+            return Stats.getAverageScore(context: modelContext)
+        }
+    }
+    
+    var body: some View {
+        HStack {
+            ScoreDisplay(score: score, label: "Current", width: CGFloat((secondary == nil) ? 300 : 150))
+            if secondary != nil {
+                ScoreDisplay(score: secondaryValue, label: secondaryLabel!, width: 150)
+            }
+        }
+    }
+}
+
+struct ScoreDisplay: View {
+    var score: Int?
+    let label: String
+    let width: CGFloat
+    
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10)
+                .frame(width: width, height: 50)
+                .foregroundStyle(Color.blue)
+            Text("\(label): \(score == nil ? "-" : String(score!))")
+        }
+    }
+}
+
+enum SecondStat {
+    case highScore
+    case lowScore
+    case average
 }
 
 #Preview {

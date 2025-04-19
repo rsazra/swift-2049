@@ -53,9 +53,17 @@ class Stats {
         print("prev!", stats.highScore, stats.gamesPlayed, stats.lowScore, stats.averageScore)
     }
     
-    static func getHighScore(context: ModelContext) -> Int {
+    static func getHighScore(context: ModelContext) -> Int? {
         let highScore = try? context.fetch(FetchDescriptor<Stats>()).first?.highScore
-        return highScore ?? 0
+        return highScore
         // in theory this could be a one liner with `try!` but I don't understand how that works?
+    }
+    static func getLowScore(context: ModelContext) -> Int? {
+        let lowScore = try? context.fetch(FetchDescriptor<Stats>()).first?.lowScore
+        return lowScore
+    }
+    static func getAverageScore(context: ModelContext) -> Int? {
+        let average = try? context.fetch(FetchDescriptor<Stats>()).first?.averageScore
+        return (average != nil) ? Int(round(average!)) : nil
     }
 }
