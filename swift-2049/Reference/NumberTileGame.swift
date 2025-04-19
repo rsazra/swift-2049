@@ -24,7 +24,7 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
     var scoreView: ScoreViewProtocol?
     
     // Width of the gameboard
-    let boardWidth: CGFloat = 300.0
+    let boardWidth: CGFloat = 325.0
     // Font size in tiles
     let fontSize: CGFloat = 32.0
     // How much padding to place between the tiles
@@ -42,7 +42,7 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
         threshold = t > 8 ? t : 8
         super.init(nibName: nil, bundle: nil)
         model = GameModel(dimension: dimension, threshold: threshold, delegate: self)
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.clear
         setupSwipeControls()
     }
     
@@ -90,37 +90,39 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
     }
     
     func setupGame() {
-        let vcHeight = view.bounds.size.height
-        let vcWidth = view.bounds.size.width
+//        let vcHeight = view.bounds.size.height
+//        let vcWidth = view.bounds.size.width
         
         // This nested function provides the x-position for a component view
         func xPositionToCenterView(_ v: UIView) -> CGFloat {
-            let viewWidth = v.bounds.size.width
-            let tentativeX = 0.5*(vcWidth - viewWidth)
-            return tentativeX >= 0 ? tentativeX : 0
+//            let viewWidth = v.bounds.size.width
+//            let tentativeX = 0.5*(vcWidth - viewWidth)
+//            return tentativeX >= 0 ? tentativeX : 0
+            return 0
         }
         // This nested function provides the y-position for a component view
         func yPositionForViewAtPosition(_ order: Int, views: [UIView]) -> CGFloat {
             assert(views.count > 0)
             assert(order >= 0 && order < views.count)
             //      let viewHeight = views[order].bounds.size.height
-            let totalHeight = CGFloat(views.count - 1)*viewPadding + views.map({ $0.bounds.size.height }).reduce(verticalViewOffset, { $0 + $1 })
-            let viewsTop = 0.5*(vcHeight - totalHeight) >= 0 ? 0.5*(vcHeight - totalHeight) : 0
+//            let totalHeight = CGFloat(views.count - 1)*viewPadding + views.map({ $0.bounds.size.height }).reduce(verticalViewOffset, { $0 + $1 })
+//            let viewsTop = 0.5*(vcHeight - totalHeight) >= 0 ? 0.5*(vcHeight - totalHeight) : 0
             
             // Not sure how to slice an array yet
             var acc: CGFloat = 0
             for i in 0..<order {
                 acc += viewPadding + views[i].bounds.size.height
             }
-            return viewsTop + acc
+//            return viewsTop + acc
+            return acc
         }
         
         // Create the score view
-        let scoreView = ScoreView(backgroundColor: UIColor.black,
-                                  textColor: UIColor.white,
-                                  font: UIFont(name: "HelveticaNeue-Bold", size: 16.0) ?? UIFont.systemFont(ofSize: 16.0),
-                                  radius: 6)
-        scoreView.score = 0
+//        let scoreView = ScoreView(backgroundColor: UIColor.black,
+//                                  textColor: UIColor.white,
+//                                  font: UIFont(name: "HelveticaNeue-Bold", size: 16.0) ?? UIFont.systemFont(ofSize: 16.0),
+//                                  radius: 6)
+//        scoreView.score = 0
         
         // Create the gameboard
         let padding: CGFloat = dimension > 5 ? thinPadding : thickPadding
@@ -135,24 +137,24 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
                                       foregroundColor: UIColor.darkGray)
         
         // Set up the frames
-        let views = [scoreView, gameboard]
+//        let views = [scoreView, gameboard]
+//        
+//        var f = scoreView.frame
+//        f.origin.x = xPositionToCenterView(scoreView)
+//        f.origin.y = yPositionForViewAtPosition(0, views: views)
+//        scoreView.frame = f
         
-        var f = scoreView.frame
-        f.origin.x = xPositionToCenterView(scoreView)
-        f.origin.y = yPositionForViewAtPosition(0, views: views)
-        scoreView.frame = f
-        
-        f = gameboard.frame
+        var f = gameboard.frame
         f.origin.x = xPositionToCenterView(gameboard)
-        f.origin.y = yPositionForViewAtPosition(1, views: views)
+        f.origin.y = yPositionForViewAtPosition(0, views: [gameboard])
         gameboard.frame = f
         
         
         // Add to game state
         view.addSubview(gameboard)
         board = gameboard
-        view.addSubview(scoreView)
-        self.scoreView = scoreView
+//        view.addSubview(scoreView)
+//        self.scoreView = scoreView
         
         assert(model != nil)
         let m = model!

@@ -85,13 +85,17 @@ struct MainView: View {
     @State private var reset: Bool = false
     @State private var result: Bool? = nil
     @State private var highScore: Int = 0
+    let boardSize: CGFloat = 325
     
     var body: some View {
         VStack {
             Text("Score: \(score)")
             Text("Result: \(String(describing: result))")
             Text("High score: \(max(highScore, score))")
+            Spacer()
             SwiftUINumberTileController(score: $score, reset: $reset, result: $result)
+                .frame(width: boardSize, height: boardSize)
+            Spacer()
             Button("Restart") {
                 showReset = true
             }
