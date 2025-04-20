@@ -90,55 +90,58 @@ struct MainView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Scoreboard(score: score, secondary: secondStat)
-                SwiftUINumberTileController(score: $score, reset: $reset, gameOver: $gameOver)
-                    .frame(width: boardSize, height: boardSize)
-            }
-            .alert(isPresented: $gameOver) {
-                Alert(
-                    title: Text("Game Over!"),
-                    primaryButton: .default(Text("Play Again")) {
-                        reset = true
-                    },
-                    secondaryButton: .cancel(Text("Cancel")) {
-                        waiting = true
-                    }
-                )
-            }
-            .toolbar {
-                ToolbarItem(placement: .bottomBar) {
-                    HStack {
-                        Button {
-                            if waiting {
-                                Stats.updateStats(with: score, context: modelContext)
-                                waiting = false
-                                reset = true
-                            }
-                            else {
-                                showReset = true
-                            }
-                        } label: {
-                            Image(systemName: "arrow.clockwise.circle.fill")
+            ZStack {
+                Color("BackgroundColor").ignoresSafeArea()
+                VStack {
+                    Scoreboard(score: score, secondary: secondStat)
+                    SwiftUINumberTileController(score: $score, reset: $reset, gameOver: $gameOver)
+                        .frame(width: boardSize, height: boardSize)
+                }
+                .alert(isPresented: $gameOver) {
+                    Alert(
+                        title: Text("Game Over!"),
+                        primaryButton: .default(Text("Play Again")) {
+                            reset = true
+                        },
+                        secondaryButton: .cancel(Text("Cancel")) {
+                            waiting = true
                         }
-                        .alert(isPresented: $showReset) {
-                            Alert(
-                                title: Text("Reset"),
-                                message: Text("Are you sure?"),
-                                primaryButton: .cancel(),
-                                secondaryButton:
-                                        .destructive(Text("Reset"),
-                                                     action: {
-                                                         Stats.updateStats(with: score, context: modelContext)
-                                                         reset = true
-                                                     }))
-                        }
-                        Spacer()
-                        NavigationLink {
-                            StatsView()
-                        } label: {
-                            //                            Image(systemName: "gear.circle.fill")
-                            Image(systemName: "list.bullet.circle.fill")
+                    )
+                }
+                .toolbar {
+                    ToolbarItem(placement: .bottomBar) {
+                        HStack {
+                            Button {
+                                if waiting {
+                                    Stats.updateStats(with: score, context: modelContext)
+                                    waiting = false
+                                    reset = true
+                                }
+                                else {
+                                    showReset = true
+                                }
+                            } label: {
+                                Image(systemName: "arrow.clockwise.circle.fill")
+                            }
+                            .alert(isPresented: $showReset) {
+                                Alert(
+                                    title: Text("Reset"),
+                                    message: Text("Are you sure?"),
+                                    primaryButton: .cancel(),
+                                    secondaryButton:
+                                            .destructive(Text("Reset"),
+                                                         action: {
+                                                             Stats.updateStats(with: score, context: modelContext)
+                                                             reset = true
+                                                         }))
+                            }
+                            Spacer()
+                            NavigationLink {
+                                StatsView()
+                            } label: {
+                                Image(systemName: "list.bullet.circle.fill")
+                                    .foregroundColor(.accentColor)
+                            }
                         }
                     }
                 }

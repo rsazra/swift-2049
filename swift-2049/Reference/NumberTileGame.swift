@@ -26,7 +26,7 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
     // Width of the gameboard
     let boardWidth: CGFloat = 325.0
     // Font size in tiles
-    let fontSize: CGFloat = 32.0
+    let fontSize: CGFloat = 30.0
     // How much padding to place between the tiles
     let thinPadding: CGFloat = 3.0
     let thickPadding: CGFloat = 6.0
@@ -87,6 +87,18 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
         m.reset()
         m.insertTileAtRandomLocation(withValue: 2)
         m.insertTileAtRandomLocation(withValue: 2)
+//        m.insertTile(at: (0,0), value: 2)
+//        m.insertTile(at: (0,1), value: 4)
+//        m.insertTile(at: (0,2), value: 8)
+//        m.insertTile(at: (0,3), value: 16)
+//        m.insertTile(at: (1,0), value: 32)
+//        m.insertTile(at: (1,1), value: 64)
+//        m.insertTile(at: (1,2), value: 128)
+//        m.insertTile(at: (1,3), value: 256)
+//        m.insertTile(at: (2,0), value: 512)
+//        m.insertTile(at: (2,1), value: 1024)
+//        m.insertTile(at: (2,2), value: 2048)
+//        m.insertTile(at: (2,3), value: 4096)
     }
     
     func setupGame() {

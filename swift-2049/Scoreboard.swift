@@ -42,9 +42,9 @@ struct ScoreDisplay: View {
         ZStack {
             RoundedRectangle(cornerRadius: 10)
                 .frame(width: width, height: 50)
-                .foregroundStyle(Color.blue)
+                .foregroundColor(.accentColor)
             Text("\(label): \(score == nil ? "-" : String(score!))")
-                .foregroundStyle(Color.white)
+                .foregroundColor(.white)
         }
     }
 }
