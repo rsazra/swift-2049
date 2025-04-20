@@ -15,6 +15,8 @@ protocol GameModelProtocol : AnyObject {
     func moveTwoTiles(from: ((Int, Int), (Int, Int)), to: (Int, Int), value: Int)
     func insertTile(at location: (Int, Int), withValue value: Int)
     func reset()
+    func loadGame(tiles: [Int])
+    func dumpGame() -> [Int]
     func gameOver(won: Bool)
 }
 

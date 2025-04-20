@@ -28,7 +28,6 @@ class Stats {
         guard let stats = (try? context.fetch(fetchDescriptor).first) else {
             let stats = Stats(firstScore: newScore)
             context.insert(stats)
-            print("new!", stats.highScore, stats.gamesPlayed, stats.lowScore, stats.averageScore)
             return
         }
         
@@ -49,8 +48,6 @@ class Stats {
         } catch {
             print("Failed to save context: \(error)")
         }
-        
-        print("prev!", stats.highScore, stats.gamesPlayed, stats.lowScore, stats.averageScore)
     }
     
     static func getHighScore(context: ModelContext) -> Int? {

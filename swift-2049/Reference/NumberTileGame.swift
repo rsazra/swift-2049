@@ -79,6 +79,7 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
         setupGame()
     }
     
+    // copy this function for loading from a saved game state
     func reset() {
         assert(board != nil && model != nil)
         let b = board!
@@ -87,29 +88,57 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
         m.reset()
         m.insertTileAtRandomLocation(withValue: 2)
         m.insertTileAtRandomLocation(withValue: 2)
-//        m.insertTile(at: (0,0), value: 2)
-//        m.insertTile(at: (0,1), value: 4)
-//        m.insertTile(at: (0,2), value: 8)
-//        m.insertTile(at: (0,3), value: 16)
-//        m.insertTile(at: (1,0), value: 32)
-//        m.insertTile(at: (1,1), value: 64)
-//        m.insertTile(at: (1,2), value: 128)
-//        m.insertTile(at: (1,3), value: 256)
-//        m.insertTile(at: (2,0), value: 512)
-//        m.insertTile(at: (2,1), value: 1024)
-//        m.insertTile(at: (2,2), value: 2048)
-//        m.insertTile(at: (2,3), value: 4096)
+//        loadGame(tiles: [0, 0, 0, 0, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096])
+//        print(dumpGame())
+    }
+    
+    func dumpGame() -> [Int] {
+        assert(model != nil)
+        let m = model!
+        let boardArray = m.gameboard.boardArray
+        var boardDump: [Int] = []
+        
+        for tile in boardArray {
+            switch tile {
+            case .empty:
+                boardDump.append(0)
+            case .tile(let v):
+                boardDump.append(v)
+            }
+        }
+        
+        return boardDump
+    }
+    
+    func loadGame(tiles: [Int]) {
+        assert(board != nil && model != nil)
+        let b = board!
+        let m = model!
+        b.reset()
+        m.reset()
+        var row = 0
+        var col = 0
+        for tile in tiles {
+            if tile != 0 {
+                m.insertTile(at: (row, col), value: tile)
+            }
+            col += 1
+            if col == 4 {
+                row += 1
+                col = 0
+            }
+        }
     }
     
     func setupGame() {
-//        let vcHeight = view.bounds.size.height
-//        let vcWidth = view.bounds.size.width
+        //        let vcHeight = view.bounds.size.height
+        //        let vcWidth = view.bounds.size.width
         
         // This nested function provides the x-position for a component view
         func xPositionToCenterView(_ v: UIView) -> CGFloat {
-//            let viewWidth = v.bounds.size.width
-//            let tentativeX = 0.5*(vcWidth - viewWidth)
-//            return tentativeX >= 0 ? tentativeX : 0
+            //            let viewWidth = v.bounds.size.width
+            //            let tentativeX = 0.5*(vcWidth - viewWidth)
+            //            return tentativeX >= 0 ? tentativeX : 0
             return 0
         }
         // This nested function provides the y-position for a component view
@@ -117,24 +146,24 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
             assert(views.count > 0)
             assert(order >= 0 && order < views.count)
             //      let viewHeight = views[order].bounds.size.height
-//            let totalHeight = CGFloat(views.count - 1)*viewPadding + views.map({ $0.bounds.size.height }).reduce(verticalViewOffset, { $0 + $1 })
-//            let viewsTop = 0.5*(vcHeight - totalHeight) >= 0 ? 0.5*(vcHeight - totalHeight) : 0
+            //            let totalHeight = CGFloat(views.count - 1)*viewPadding + views.map({ $0.bounds.size.height }).reduce(verticalViewOffset, { $0 + $1 })
+            //            let viewsTop = 0.5*(vcHeight - totalHeight) >= 0 ? 0.5*(vcHeight - totalHeight) : 0
             
             // Not sure how to slice an array yet
             var acc: CGFloat = 0
             for i in 0..<order {
                 acc += viewPadding + views[i].bounds.size.height
             }
-//            return viewsTop + acc
+            //            return viewsTop + acc
             return acc
         }
         
         // Create the score view
-//        let scoreView = ScoreView(backgroundColor: UIColor.black,
-//                                  textColor: UIColor.white,
-//                                  font: UIFont(name: "HelveticaNeue-Bold", size: 16.0) ?? UIFont.systemFont(ofSize: 16.0),
-//                                  radius: 6)
-//        scoreView.score = 0
+        //        let scoreView = ScoreView(backgroundColor: UIColor.black,
+        //                                  textColor: UIColor.white,
+        //                                  font: UIFont(name: "HelveticaNeue-Bold", size: 16.0) ?? UIFont.systemFont(ofSize: 16.0),
+        //                                  radius: 6)
+        //        scoreView.score = 0
         
         // Create the gameboard
         let padding: CGFloat = dimension > 5 ? thinPadding : thickPadding
@@ -149,12 +178,12 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
                                       foregroundColor: UIColor.darkGray)
         
         // Set up the frames
-//        let views = [scoreView, gameboard]
-//        
-//        var f = scoreView.frame
-//        f.origin.x = xPositionToCenterView(scoreView)
-//        f.origin.y = yPositionForViewAtPosition(0, views: views)
-//        scoreView.frame = f
+        //        let views = [scoreView, gameboard]
+        //
+        //        var f = scoreView.frame
+        //        f.origin.x = xPositionToCenterView(scoreView)
+        //        f.origin.y = yPositionForViewAtPosition(0, views: views)
+        //        scoreView.frame = f
         
         var f = gameboard.frame
         f.origin.x = xPositionToCenterView(gameboard)
@@ -165,8 +194,8 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
         // Add to game state
         view.addSubview(gameboard)
         board = gameboard
-//        view.addSubview(scoreView)
-//        self.scoreView = scoreView
+        //        view.addSubview(scoreView)
+        //        self.scoreView = scoreView
         
         assert(model != nil)
         let m = model!
@@ -178,11 +207,11 @@ class NumberTileGameViewController : UIViewController, GameModelProtocol {
     func followUp() {
         assert(model != nil)
         let m = model!
-//        let (userWon, _) = m.userHasWon()
-//        if userWon {
-//            // alerting delegate is done in m.userHasWon
-//            return
-//        }
+        //        let (userWon, _) = m.userHasWon()
+        //        if userWon {
+        //            // alerting delegate is done in m.userHasWon
+        //            return
+        //        }
         
         // Now, insert more tiles
         let randomVal = Int(arc4random_uniform(10))

@@ -46,12 +46,6 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
         var originalDelegate: GameModelProtocol?
         
         // unchanged protocol functions
-        func reset() {
-            DispatchQueue.main.async {
-                self.parent.gameOver = false
-            }
-            originalDelegate?.reset()
-        }
         func moveOneTile(from: (Int, Int), to: (Int, Int), value: Int) {
             originalDelegate?.moveOneTile(from: from, to: to, value: value)
         }
@@ -74,6 +68,19 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
             DispatchQueue.main.async {
                 self.parent.gameOver = true
             }
+        }
+        func reset() {
+            DispatchQueue.main.async {
+                self.parent.gameOver = false
+            }
+            originalDelegate?.reset()
+        }
+        func loadGame(tiles: [Int]) {
+            originalDelegate?.loadGame(tiles: tiles)
+        }
+        func dumpGame() -> [Int] {
+            let dump = originalDelegate?.dumpGame() ?? []
+            return dump
         }
     }
 }
