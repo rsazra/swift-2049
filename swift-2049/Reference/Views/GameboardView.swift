@@ -176,10 +176,12 @@ class GameboardView : UIView {
         let toKey = IndexPath(row: toRow, section: toCol)
         
         guard let tileA = tiles[fromKeyA] else {
-            assert(false, "placeholder error")
+            return
+//            assert(false, "placeholder error")
         }
         guard let tileB = tiles[fromKeyB] else {
-            assert(false, "placeholder error")
+            return
+//            assert(false, "placeholder error")
         }
         
         // Make the frame
