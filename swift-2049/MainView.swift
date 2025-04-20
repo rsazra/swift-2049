@@ -13,7 +13,7 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
     // reset: false by default, true if reset requested
     @Binding var reset: Bool
     // result: nil if ongoing, False if lost, True if won
-    @Binding var result: Bool?
+    @Binding var gameOver: Bool
     
     func makeUIViewController(context: Context) -> NumberTileGameViewController {
         let game = NumberTileGameViewController(dimension: 4, threshold: 8)
@@ -48,7 +48,7 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
         // unchanged protocol functions
         func reset() {
             DispatchQueue.main.async {
-                self.parent.result = nil
+                self.parent.gameOver = false
             }
             originalDelegate?.reset()
         }
@@ -72,7 +72,7 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
         func gameOver(won: Bool) {
             originalDelegate?.gameOver(won: won)
             DispatchQueue.main.async {
-                self.parent.result = won
+                self.parent.gameOver = true
             }
         }
     }
@@ -81,99 +81,78 @@ struct SwiftUINumberTileController: UIViewControllerRepresentable {
 struct MainView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var score: Int = 0
-    @State private var showReset: Bool = false
     @State private var reset: Bool = false
-    @State private var result: Bool? = nil
-    @State private var highScore: Int = 0
-    @State private var secondStat: SecondStat? = .highScore
-//    @State private var secondStat: SecondStat? = nil
+    @State private var showReset: Bool = false
+    @State private var gameOver: Bool = false
+    @State private var waiting: Bool = false
+    @AppStorage("secondStat") var secondStat: SecondStat = .highScore
     let boardSize: CGFloat = 325
     
     var body: some View {
-        VStack {
-            Text("Score: \(score)")
-            Text("Result: \(String(describing: result))")
-            Text("High score: \(max(highScore, score))")
-            Spacer()
-            ScoreBoard(score: score, secondary: secondStat)
-            SwiftUINumberTileController(score: $score, reset: $reset, result: $result)
-                .frame(width: boardSize, height: boardSize)
-            Spacer()
-            Button("Restart") {
-                showReset = true
+        NavigationStack {
+            VStack {
+                Scoreboard(score: score, secondary: secondStat)
+                SwiftUINumberTileController(score: $score, reset: $reset, gameOver: $gameOver)
+                    .frame(width: boardSize, height: boardSize)
             }
-            .alert(isPresented: $showReset) {
+            .alert(isPresented: $gameOver) {
                 Alert(
-                    title: Text("Reset"),
-                    message: Text("Are you sure?"),
-                    primaryButton: .cancel(),
-                    secondaryButton: .destructive(Text("Reset"),
-                    action: {
-                        Stats.updateStats(with: score, context: modelContext)
-                        highScore = Stats.getHighScore(context: modelContext) ?? 0
+                    title: Text("Game Over!"),
+                    primaryButton: .default(Text("Play Again")) {
                         reset = true
-                    }))
+                    },
+                    secondaryButton: .cancel(Text("Cancel")) {
+                        waiting = true
+                    }
+                )
+            }
+            .toolbar {
+                ToolbarItem(placement: .bottomBar) {
+                    HStack {
+                        Button {
+                            if waiting {
+                                Stats.updateStats(with: score, context: modelContext)
+                                waiting = false
+                                reset = true
+                            }
+                            else {
+                                showReset = true
+                            }
+                        } label: {
+                            Image(systemName: "arrow.clockwise.circle.fill")
+                        }
+                        .alert(isPresented: $showReset) {
+                            Alert(
+                                title: Text("Reset"),
+                                message: Text("Are you sure?"),
+                                primaryButton: .cancel(),
+                                secondaryButton:
+                                        .destructive(Text("Reset"),
+                                                     action: {
+                                                         Stats.updateStats(with: score, context: modelContext)
+                                                         reset = true
+                                                     }))
+                        }
+                        Spacer()
+                        NavigationLink {
+                            StatsView()
+                        } label: {
+                            //                            Image(systemName: "gear.circle.fill")
+                            Image(systemName: "list.bullet.circle.fill")
+                        }
+                    }
+                }
             }
         }
     }
 }
 
-struct ScoreBoard: View {
-    @Environment(\.modelContext) private var modelContext
-    var score: Int
-    var secondary: SecondStat?
-    var secondaryLabel: String? {
-        guard let secondary = secondary else { return nil }
-        switch secondary {
-        case .highScore:
-            return "High Score"
-        case .lowScore:
-            return "Worst Score"
-        case .average:
-            return "Average"
-        }
-    }
-    var secondaryValue: Int? {
-        guard let secondary = secondary else { return nil }
-        switch secondary {
-        case .highScore:
-            return max(score, Stats.getHighScore(context: modelContext) ?? 0)
-        case .lowScore:
-            return Stats.getLowScore(context: modelContext)
-        case .average:
-            return Stats.getAverageScore(context: modelContext)
-        }
-    }
-    
-    var body: some View {
-        HStack {
-            ScoreDisplay(score: score, label: "Current", width: CGFloat((secondary == nil) ? 300 : 150))
-            if secondary != nil {
-                ScoreDisplay(score: secondaryValue, label: secondaryLabel!, width: 150)
-            }
-        }
-    }
-}
 
-struct ScoreDisplay: View {
-    var score: Int?
-    let label: String
-    let width: CGFloat
-    
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 10)
-                .frame(width: width, height: 50)
-                .foregroundStyle(Color.blue)
-            Text("\(label): \(score == nil ? "-" : String(score!))")
-        }
-    }
-}
-
-enum SecondStat {
-    case highScore
-    case lowScore
-    case average
+enum SecondStat: String, CaseIterable {
+    case highScore = "High Score"
+    case lowScore = "Worst Score"
+    case averageScore = "Average Score"
+    case none = "None"
 }
 
 #Preview {
