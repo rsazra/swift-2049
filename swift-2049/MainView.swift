@@ -152,9 +152,9 @@ struct MainView: View {
 
 
 enum SecondStat: String, CaseIterable {
-    case highScore = "High Score"
-    case lowScore = "Worst Score"
-    case averageScore = "Average Score"
+    case highScore = "Best"
+    case lowScore = "Worst"
+    case averageScore = "Average"
     case none = "None"
 }
 

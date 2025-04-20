@@ -12,12 +12,12 @@ struct StatsView: View {
     
     var body: some View {
         Form {
-            Section(header: Text("Previous Games")) {
+            Section(header: Text("History")) {
                 StatRow(label: SecondStat.highScore.rawValue, value: Stats.getHighScore(context: modelContext))
                 StatRow(label: SecondStat.averageScore.rawValue, value: Stats.getAverageScore(context: modelContext))
                 StatRow(label: SecondStat.lowScore.rawValue, value: Stats.getLowScore(context: modelContext))
             }
-            Section(header: Text("Display Statistic")) {
+            Section(header: Text("Home Screen")) {
                 Picker("Display Stat", selection: $secondStat) {
                     ForEach(SecondStat.allCases, id: \.self) { option in
                         Text(option.rawValue).tag(option)

@@ -30,7 +30,7 @@ class TileView : UIView {
         numberLabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: width))
         numberLabel.textAlignment = NSTextAlignment.center
         numberLabel.minimumScaleFactor = 0.5
-        numberLabel.font = delegate.fontForNumbers(size: fontSize)
+        numberLabel.font = delegate.fontForNumbers(size: fontSize) // pass value in here for varying font size?
         
         super.init(frame: CGRect(x: position.x, y: position.y, width: width, height: width))
         addSubview(numberLabel)

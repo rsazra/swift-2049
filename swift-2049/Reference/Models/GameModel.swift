@@ -36,7 +36,7 @@ class GameModel : NSObject {
     var timer: Timer
     
     let maxCommands = 100
-    let queueDelay = 0.3
+    let queueDelay = 0.1
     
     init(dimension d: Int, threshold t: Int, delegate: GameModelProtocol) {
         dimension = d

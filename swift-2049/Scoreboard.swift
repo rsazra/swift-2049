@@ -25,7 +25,7 @@ struct Scoreboard: View {
     
     var body: some View {
         HStack {
-            ScoreDisplay(score: score, label: "Current", width: CGFloat((secondary == SecondStat.none) ? 300 : 150))
+            ScoreDisplay(score: score, label: "Score", width: CGFloat((secondary == SecondStat.none) ? 300 : 150))
             if secondary != SecondStat.none {
                 ScoreDisplay(score: secondaryValue, label: secondary.rawValue, width: 150)
             }
