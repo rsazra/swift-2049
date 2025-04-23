@@ -5,7 +5,7 @@ https://github.com/user-attachments/assets/b1166ccb-bfe6-46a1-83e2-2cb812060f37
 
 
 This project was undertaken to:
-1. Get an easy introduction to SwiftData and SwiftUI navigation
+1. Get an easy, ultra simple introduction to SwiftData and SwiftUI navigation
 2. Learn about UIKit, and how it interfaces with SwiftUI
 3. Fulfill a friend's request of a 2048 game that can show one's worst score on the main page
 
