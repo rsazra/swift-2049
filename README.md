@@ -18,3 +18,5 @@ Improvements to make:
 - Undo move (would likely follow easily from saving game state each move)
 - More stats (game time, number of games played, moves per game, etc.)
 - Complete scoreboard customization (anywhere from 0 to 4 stats on main page)
+
+Ultimately, I had fun making it and certainly improved, but I think a bigger jump would've been better.
